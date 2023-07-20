@@ -7,7 +7,7 @@
     {
         private Dictionary<string, Course> completed;
         private Dictionary<string, Course> courses;
-        private Dictionary<string, List<Course>> prerequisites;
+        private Dictionary<Course, List<Course>> prerequisites;
 
         /// <summary>
         /// Constructs a Scheduler object.
@@ -16,7 +16,7 @@
         {
             completed = new Dictionary<string, Course>();
             courses = new Dictionary<string, Course>();
-            prerequisites = new Dictionary<string, List<Course>>();
+            prerequisites = new Dictionary<Course, List<Course>>();
         }
 
         /// <summary>
@@ -28,7 +28,7 @@
         {
             completed = new Dictionary<string, Course>();
             courses = new Dictionary<string, Course>();
-            prerequisites = new Dictionary<string, List<Course>>();
+            prerequisites = new Dictionary<Course, List<Course>>();
 
             for (int i = 0; i < courseList.Count; i++)
             {
@@ -100,29 +100,38 @@
             AddCourse(prerequisite);
             AddCourse(next);
 
-            if (prerequisites.ContainsKey(next.Code))
+            // Check for duplicates.
+            if (prerequisites.ContainsKey(next) && !prerequisites[next].Contains(prerequisite))
             {
-                prerequisites[next.Code].Add(prerequisite);
+                prerequisites[next].Add(prerequisite);
             }
-            else
+
+            // Add the prerequisite course as a key.
+            if (!prerequisites.ContainsKey(prerequisite))
             {
-                prerequisites[next.Code] = new List<Course> {prerequisite};
+                prerequisites[prerequisite] = new List<Course>();
+            }
+
+            // Add key and value pair if it doesn't exist.
+            if (!prerequisites.ContainsKey(next))
+            {
+                prerequisites[next] = new List<Course> { prerequisite };
             }
         }
 
 
         public string SeePrerequisites(Course course)
         {
-            if (!prerequisites.ContainsKey(course.Code))
+            if (!prerequisites.ContainsKey(course))
             {
                 throw new KeyNotFoundException("This course is not in the prerequisites dictionary.");
             }
 
             string prereqs = "";
 
-            for (int i = 0; i < prerequisites.Count; i++)
+            for (int i = 0; i < prerequisites[course].Count; i++)
             {
-                prereqs += course.Code + " has the following prerequisite: " + prerequisites[course.Code][i].Code + "\n";
+                prereqs += course.Code + " has the following prerequisite: " + prerequisites[course][i].Code + "\n";
                 //prereqs += prerequisites[course.Code][i].Code + " -> " + course.Code + "\n";
             }
             
@@ -130,19 +139,67 @@
         }
 
 
-        public void SortCourses()
+        public string SortCourses()
         {
             // To store nodes.
             Stack<Course> stack = new Stack<Course>();
 
             // Mark all the vertices as not visited.
-            Dictionary<string, bool> visited = new Dictionary<string, bool>(prerequisites.Count);
+            Dictionary<Course, bool> visited = new Dictionary<Course, bool>(prerequisites.Count);
 
-            List<string> list = prerequisites.Keys.ToList();
-            for (int i = 0; i < prerequisites.Count;i++)
+            // Call Topological Sort on all vertices, one by one.
+            Dictionary<Course, List<Course>>.KeyCollection keyCollec = prerequisites.Keys;
+            foreach (Course key in keyCollec)
             {
-                
+                if (!visited.ContainsKey(key))
+                {
+                    TopologicalSort(key, visited, stack);
+                }
             }
+
+            // Reverse the order of the stack.
+            Stack<Course> temp = new Stack<Course>();
+            foreach (Course course in stack)
+            {
+                temp.Push(course);
+            }
+            stack = temp;
+
+            string test = "";
+            int counter = 0;
+            foreach (Course course in stack)
+            {
+                if (counter < stack.Count - 1)
+                {
+                    test += course.Code + " -> ";
+                    counter++;
+                }
+                else
+                {
+                    test += course.Code;
+                }
+            }
+
+            return test;
+        }
+
+
+        private void TopologicalSort(Course key, Dictionary<Course, bool> visited, Stack<Course> stack)
+        {
+            // Mark current node as visited.
+            visited[key] = true;
+
+            // Visit the nodes (aka courses) connected to this one.
+            foreach (Course course in prerequisites[key])
+            {
+                if (!visited.ContainsKey(course))
+                {
+                    TopologicalSort(course, visited, stack);
+                }
+            }
+
+            // Push current node to stack.
+            stack.Push(key);
         }
     }
 
