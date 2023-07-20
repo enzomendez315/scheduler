@@ -100,6 +100,12 @@
             AddCourse(prerequisite);
             AddCourse(next);
 
+            // Check for circular dependencies.
+            if (prerequisite.Equals(next)) // || prerequisites[next].Contains(null))
+            {
+                throw new ArgumentException("Cannot create a circular dependency.");
+            }
+
             // Check for duplicates.
             if (prerequisites.ContainsKey(next) && !prerequisites[next].Contains(prerequisite))
             {
