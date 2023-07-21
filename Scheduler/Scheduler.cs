@@ -1,22 +1,24 @@
-﻿namespace SchedulerBuilder
+﻿using System.ComponentModel.Design;
+
+namespace SchedulerBuilder
 {
     /// <summary>
     /// This class is used to create a course scheduler.
     /// </summary>
     public class Scheduler
     {
-        private Dictionary<string, Course> completed;
-        private Dictionary<string, Course> courses;
-        private Dictionary<Course, List<Course>> prerequisites;
+        private HashSet<Course> completed;
+        private Dictionary<string, Course> allCourses;
+        private Dictionary<Course, List<Course>> courses;
 
         /// <summary>
         /// Constructs a Scheduler object.
         /// </summary>
         public Scheduler()
         {
-            completed = new Dictionary<string, Course>();
-            courses = new Dictionary<string, Course>();
-            prerequisites = new Dictionary<Course, List<Course>>();
+            completed = new HashSet<Course>();
+            allCourses = new Dictionary<string, Course>();
+            courses = new Dictionary<Course, List<Course>>();
         }
 
         /// <summary>
@@ -26,49 +28,49 @@
         /// <param name="courseList"></param>
         public Scheduler(List<Course> courseList)
         {
-            completed = new Dictionary<string, Course>();
-            courses = new Dictionary<string, Course>();
-            prerequisites = new Dictionary<Course, List<Course>>();
+            completed = new HashSet<Course>();
+            allCourses = new Dictionary<string, Course>();
+            courses = new Dictionary<Course, List<Course>>();
 
             for (int i = 0; i < courseList.Count; i++)
             {
-                courses[courseList[i].Code] = courseList[i];
+                allCourses[courseList[i].Code] = courseList[i];
             }
         }
 
-        /// <summary>
-        /// Returns the Course object based on the argument as key.
-        /// Throws an exception if the Course isn't found.
-        /// </summary>
-        /// <param name="course"></param>
-        /// <returns></returns>
-        /// <exception cref="KeyNotFoundException"></exception>
-        public Course GetCompleted(string course)
-        {
-            if (!completed.ContainsKey(course))
-            {
-                throw new KeyNotFoundException("This course is not in the completed dictionary.");
-            }
+            ///// <summary>
+            ///// Returns the Course object based on the argument as key.
+            ///// Throws an exception if the Course isn't found.
+            ///// </summary>
+            ///// <param name="course"></param>
+            ///// <returns></returns>
+            ///// <exception cref="KeyNotFoundException"></exception>
+            //public Course GetCompleted(Course course)
+            //{
+            //    if (!completed.Contains(course))
+            //    {
+            //        throw new KeyNotFoundException("This course is not in the completed dictionary.");
+            //    }
 
-            return completed[course];
-        }
+            //    return completed;
+            //}
 
-        /// <summary>
-        /// Returns the Course object based on the argument as key.
-        /// Throws an exception if the Course isn't found.
-        /// </summary>
-        /// <param name="course"></param>
-        /// <returns></returns>
-        /// <exception cref="KeyNotFoundException"></exception>
-        public Course GetCourse(string course)
-        {
-            if (!courses.ContainsKey(course))
-            {
-                throw new KeyNotFoundException("This course is not in the courses dictionary.");
-            }
+            ///// <summary>
+            ///// Returns the Course object based on the argument as key.
+            ///// Throws an exception if the Course isn't found.
+            ///// </summary>
+            ///// <param name="course"></param>
+            ///// <returns></returns>
+            ///// <exception cref="KeyNotFoundException"></exception>
+            //public Course GetCourse(string course)
+            //{
+            //    if (!allCourses.ContainsKey(course))
+            //    {
+            //        throw new KeyNotFoundException("This course is not in the courses dictionary.");
+            //    }
 
-            return courses[course];
-        }
+            //    return allCourses[course];
+            //}
 
         /// <summary>
         /// Adds a course to the completed dictionary.
@@ -76,9 +78,9 @@
         /// <param name="course"></param>
         public void AddCompleted(Course course)
         {
-            if (!completed.ContainsKey(course.Code))
+            if (!completed.Contains(course))
             {
-                completed[course.Code] = course;
+                completed.Add(course);
             }
         }
 
@@ -88,9 +90,9 @@
         /// <param name="course"></param>
         public void AddCourse(Course course)
         {
-            if (!courses.ContainsKey(course.Code))
+            if (!allCourses.ContainsKey(course.Code))
             {
-                courses[course.Code] = course;
+                allCourses[course.Code] = course;
             }
         }
 
@@ -100,44 +102,58 @@
             AddCourse(prerequisite);
             AddCourse(next);
 
-            // Check for circular dependencies.
-            if (prerequisite.Equals(next)) // || prerequisites[next].Contains(null))
+            // Check for self loops.
+            if (prerequisite.Equals(next))
             {
-                throw new ArgumentException("Cannot create a circular dependency.");
+                throw new ArgumentException("Cannot use a course as its own prerequisite.");
             }
 
             // Check for duplicates.
-            if (prerequisites.ContainsKey(next) && !prerequisites[next].Contains(prerequisite))
+            if (courses.ContainsKey(next) && !courses[next].Contains(prerequisite))
             {
-                prerequisites[next].Add(prerequisite);
+                courses[next].Add(prerequisite);
+                if (hasCycles())
+                {
+                    RemovePrerequisite(prerequisite, next);
+                    throw new ArgumentException("Cannot create a circular dependency.");
+                }
             }
 
             // Add the prerequisite course as a key.
-            if (!prerequisites.ContainsKey(prerequisite))
+            if (!courses.ContainsKey(prerequisite))
             {
-                prerequisites[prerequisite] = new List<Course>();
+                courses[prerequisite] = new List<Course>();
             }
 
             // Add key and value pair if it doesn't exist.
-            if (!prerequisites.ContainsKey(next))
+            if (!courses.ContainsKey(next))
             {
-                prerequisites[next] = new List<Course> { prerequisite };
+                courses[next] = new List<Course> {prerequisite};
             }
+        }
+
+        public void RemovePrerequisite(Course prerequisite, Course next)
+        {
+            // Check if next exists as a key.
+
+            // Check if prerequisite exists as a value of next.
+
+            // Remove it.
         }
 
 
         public string SeePrerequisites(Course course)
         {
-            if (!prerequisites.ContainsKey(course))
+            if (!courses.ContainsKey(course))
             {
                 throw new KeyNotFoundException("This course is not in the prerequisites dictionary.");
             }
 
             string prereqs = "";
 
-            for (int i = 0; i < prerequisites[course].Count; i++)
+            for (int i = 0; i < courses[course].Count; i++)
             {
-                prereqs += course.Code + " has the following prerequisite: " + prerequisites[course][i].Code + "\n";
+                prereqs += course.Code + " has the following prerequisite: " + courses[course][i].Code + "\n";
                 //prereqs += prerequisites[course.Code][i].Code + " -> " + course.Code + "\n";
             }
             
@@ -150,11 +166,11 @@
             // To store nodes.
             Stack<Course> stack = new Stack<Course>();
 
-            // Mark all the vertices as not visited.
-            Dictionary<Course, bool> visited = new Dictionary<Course, bool>(prerequisites.Count);
+            // Mark all the nodes as not visited.
+            Dictionary<Course, bool> visited = new Dictionary<Course, bool>(courses.Count);
 
-            // Call Topological Sort on all vertices, one by one.
-            Dictionary<Course, List<Course>>.KeyCollection keyCollec = prerequisites.Keys;
+            // Call Topological Sort on all nodes, one by one.
+            Dictionary<Course, List<Course>>.KeyCollection keyCollec = courses.Keys;
             foreach (Course key in keyCollec)
             {
                 if (!visited.ContainsKey(key))
@@ -196,7 +212,7 @@
             visited[key] = true;
 
             // Visit the nodes (aka courses) connected to this one.
-            foreach (Course course in prerequisites[key])
+            foreach (Course course in courses[key])
             {
                 if (!visited.ContainsKey(course))
                 {
@@ -206,6 +222,53 @@
 
             // Push current node to stack.
             stack.Push(key);
+        }
+
+        public bool hasCycles()
+        {
+            // To keep track of visited nodes.
+            Dictionary<Course, bool> visited = new Dictionary<Course, bool>(courses.Count);
+            Stack<Course> stack = new Stack<Course>(courses.Count);
+
+            Dictionary<Course, List<Course>>.KeyCollection keyCollec = courses.Keys;
+            foreach (Course key in keyCollec)
+            {
+                if (DFS(key, visited, stack))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
+        private bool DFS(Course course, Dictionary<Course, bool> visited, Stack<Course> stack)
+        {
+            if (stack.Contains(course))
+            {
+                return true;
+            }
+
+            if (visited.ContainsKey(course) && visited[course])
+            {
+                return false;
+            }
+
+            visited[course] = true;
+            stack.Push(course);
+
+            foreach (Course prereq in courses[course])
+            {
+                if (DFS(prereq, visited, stack))
+                {
+                    return true;
+                }
+            }
+
+            stack.Pop();
+
+            return false;
         }
     }
 
