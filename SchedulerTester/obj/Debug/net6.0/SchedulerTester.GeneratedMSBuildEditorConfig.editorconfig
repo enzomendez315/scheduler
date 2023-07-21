@@ -8,4 +8,4 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = SchedulerTester
-build_property.ProjectDir = C:\Users\enzom\source\repos\SchedulerTester\
+build_property.ProjectDir = C:\Users\enzom\source\repos\Scheduler\SchedulerTester\

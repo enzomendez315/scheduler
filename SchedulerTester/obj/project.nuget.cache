@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "u4fr1HZhvJhaaB3yJQ62mjla8cYx1OieOYr15vZfyew/weHyIcF+1MZSveEzYSZ7ada7CWtLP1jscjUsg1eD6g==",
+  "dgSpecHash": "J9kTj/6gZDEpSlrXu04d+ZlwttH3A+QV7fU8GxAdpLL+Pn5oQWE+fzlg8DAMSOaZnFgmn4p99qeOG+S1aIOBvg==",
   "success": true,
-  "projectFilePath": "C:\\Users\\enzom\\source\\repos\\SchedulerTester\\SchedulerTester.csproj",
+  "projectFilePath": "C:\\Users\\enzom\\source\\repos\\Scheduler\\SchedulerTester\\SchedulerTester.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\enzom\\.nuget\\packages\\coverlet.collector\\3.2.0\\coverlet.collector.3.2.0.nupkg.sha512",
     "C:\\Users\\enzom\\.nuget\\packages\\microsoft.codecoverage\\17.5.0\\microsoft.codecoverage.17.5.0.nupkg.sha512",

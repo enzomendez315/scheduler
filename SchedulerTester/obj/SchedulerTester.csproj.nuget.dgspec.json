@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\enzom\\source\\repos\\SchedulerTester\\SchedulerTester.csproj": {}
+    "C:\\Users\\enzom\\source\\repos\\Scheduler\\SchedulerTester\\SchedulerTester.csproj": {}
   },
   "projects": {
-    "C:\\Users\\enzom\\source\\repos\\SchedulerTester\\SchedulerTester.csproj": {
+    "C:\\Users\\enzom\\source\\repos\\Scheduler\\SchedulerTester\\SchedulerTester.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\enzom\\source\\repos\\SchedulerTester\\SchedulerTester.csproj",
+        "projectUniqueName": "C:\\Users\\enzom\\source\\repos\\Scheduler\\SchedulerTester\\SchedulerTester.csproj",
         "projectName": "SchedulerTester",
-        "projectPath": "C:\\Users\\enzom\\source\\repos\\SchedulerTester\\SchedulerTester.csproj",
+        "projectPath": "C:\\Users\\enzom\\source\\repos\\Scheduler\\SchedulerTester\\SchedulerTester.csproj",
         "packagesPath": "C:\\Users\\enzom\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\enzom\\source\\repos\\SchedulerTester\\obj\\",
+        "outputPath": "C:\\Users\\enzom\\source\\repos\\Scheduler\\SchedulerTester\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -33,8 +33,8 @@
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "C:\\Users\\enzom\\source\\repos\\Scheduler\\Scheduler.csproj": {
-                "projectPath": "C:\\Users\\enzom\\source\\repos\\Scheduler\\Scheduler.csproj"
+              "C:\\Users\\enzom\\source\\repos\\Scheduler\\Scheduler\\Scheduler.csproj": {
+                "projectPath": "C:\\Users\\enzom\\source\\repos\\Scheduler\\Scheduler\\Scheduler.csproj"
               }
             }
           }
@@ -86,14 +86,14 @@
         }
       }
     },
-    "C:\\Users\\enzom\\source\\repos\\Scheduler\\Scheduler.csproj": {
+    "C:\\Users\\enzom\\source\\repos\\Scheduler\\Scheduler\\Scheduler.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\enzom\\source\\repos\\Scheduler\\Scheduler.csproj",
+        "projectUniqueName": "C:\\Users\\enzom\\source\\repos\\Scheduler\\Scheduler\\Scheduler.csproj",
         "projectName": "Scheduler",
-        "projectPath": "C:\\Users\\enzom\\source\\repos\\Scheduler\\Scheduler.csproj",
+        "projectPath": "C:\\Users\\enzom\\source\\repos\\Scheduler\\Scheduler\\Scheduler.csproj",
         "packagesPath": "C:\\Users\\enzom\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\enzom\\source\\repos\\Scheduler\\obj\\",
+        "outputPath": "C:\\Users\\enzom\\source\\repos\\Scheduler\\Scheduler\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
