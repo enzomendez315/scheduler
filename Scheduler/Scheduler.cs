@@ -102,8 +102,20 @@
             return completed.ToList();
         }
 
-
-        public void AddPrerequisite(Course prerequisite, Course next)
+        /// <summary>
+        /// Adds both courses to the courses dictionary and creates 
+        /// an edge between them to represent their relationship.
+        /// 
+        /// Returns true if the relationship is added or false if 
+        /// it already exists.
+        /// 
+        /// Throws an exception if this relationship causes cycles 
+        /// in the graph.
+        /// </summary>
+        /// <param name="prerequisite"></param>
+        /// <param name="next"></param>
+        /// <exception cref="ArgumentException"></exception>
+        public bool AddPrerequisite(Course prerequisite, Course next)
         {
             AddCourse(prerequisite);
             AddCourse(next);
@@ -115,25 +127,46 @@
             }
 
             // Check for duplicates.
-            if (courses.ContainsKey(next) && !courses[next].Contains(prerequisite))
+            if (courses[next].Contains(prerequisite))
             {
-                courses[next].Add(prerequisite);
-                if (hasCycles())
-                {
-                    RemovePrerequisite(prerequisite, next);
-                    throw new ArgumentException("Cannot create a circular dependency.");
-                }
+                return false;
             }
+
+            courses[next].Add(prerequisite);
+            if (hasCycles())
+            {
+                RemovePrerequisite(prerequisite, next);
+                throw new ArgumentException("Cannot create a circular dependency.");
+            }
+
+            return true;
         }
 
-
-        public void RemovePrerequisite(Course prerequisite, Course next)
+        /// <summary>
+        /// Removes the edge between the courses. Returns true if the relationship 
+        /// is removed or false if it didn't exist in the first place.
+        /// 
+        /// Throws an exception if the course used as key can't be found.
+        /// </summary>
+        /// <param name="prerequisite"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        public bool RemovePrerequisite(Course prerequisite, Course next)
         {
-            // Check if next exists as a key.
+            if (!courses.ContainsKey(next))
+            {
+                throw new KeyNotFoundException("Course does not exist as a key.");
+            }
 
-            // Check if prerequisite exists as a value of next.
+            // Course is not a prerequisite of next.
+            if (!courses[next].Contains(prerequisite))
+            {
+                return false;
+            }
 
-            // Remove it.
+            courses[next].Remove(prerequisite);
+            return true;
         }
 
 
@@ -334,6 +367,16 @@
             }
 
             return ToString().Equals(obj.ToString());
+        }
+
+        /// <summary>
+        /// Returns the hash code of a course based on 
+        /// the course code.
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            return code.GetHashCode();
         }
 
         /// <summary>
