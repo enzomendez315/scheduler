@@ -1,24 +1,22 @@
-﻿using System.ComponentModel.Design;
-
-namespace SchedulerBuilder
+﻿namespace SchedulerBuilder
 {
     /// <summary>
     /// This class is used to create a course scheduler.
     /// </summary>
     public class Scheduler
     {
-        private HashSet<Course> completed;
-        private Dictionary<string, Course> allCourses;
-        private Dictionary<Course, List<Course>> courses;
+        private Dictionary<string, Course> courseNames;     // Mappings of course codes to course objects.
+        private Dictionary<Course, List<Course>> courses;   // All courses and their prerequisites.
+        private HashSet<Course> completed;                  // Courses that have been fulfilled.
 
         /// <summary>
         /// Constructs a Scheduler object.
         /// </summary>
         public Scheduler()
         {
-            completed = new HashSet<Course>();
-            allCourses = new Dictionary<string, Course>();
+            courseNames = new Dictionary<string, Course>();
             courses = new Dictionary<Course, List<Course>>();
+            completed = new HashSet<Course>();
         }
 
         /// <summary>
@@ -28,72 +26,80 @@ namespace SchedulerBuilder
         /// <param name="courseList"></param>
         public Scheduler(List<Course> courseList)
         {
-            completed = new HashSet<Course>();
-            allCourses = new Dictionary<string, Course>();
+            courseNames = new Dictionary<string, Course>();
             courses = new Dictionary<Course, List<Course>>();
+            completed = new HashSet<Course>();
 
-            for (int i = 0; i < courseList.Count; i++)
+            foreach (Course course in courseList)
             {
-                allCourses[courseList[i].Code] = courseList[i];
-            }
-        }
-
-            ///// <summary>
-            ///// Returns the Course object based on the argument as key.
-            ///// Throws an exception if the Course isn't found.
-            ///// </summary>
-            ///// <param name="course"></param>
-            ///// <returns></returns>
-            ///// <exception cref="KeyNotFoundException"></exception>
-            //public Course GetCompleted(Course course)
-            //{
-            //    if (!completed.Contains(course))
-            //    {
-            //        throw new KeyNotFoundException("This course is not in the completed dictionary.");
-            //    }
-
-            //    return completed;
-            //}
-
-            ///// <summary>
-            ///// Returns the Course object based on the argument as key.
-            ///// Throws an exception if the Course isn't found.
-            ///// </summary>
-            ///// <param name="course"></param>
-            ///// <returns></returns>
-            ///// <exception cref="KeyNotFoundException"></exception>
-            //public Course GetCourse(string course)
-            //{
-            //    if (!allCourses.ContainsKey(course))
-            //    {
-            //        throw new KeyNotFoundException("This course is not in the courses dictionary.");
-            //    }
-
-            //    return allCourses[course];
-            //}
-
-        /// <summary>
-        /// Adds a course to the completed dictionary.
-        /// </summary>
-        /// <param name="course"></param>
-        public void AddCompleted(Course course)
-        {
-            if (!completed.Contains(course))
-            {
-                completed.Add(course);
+                AddCourse(course);
             }
         }
 
         /// <summary>
-        /// Adds a course to the courses dictionary.
+        /// Adds a course to the courses dictionary and 
+        /// binds it to the course code.
+        /// 
+        /// Returns false if the course already exists.
+        /// True otherwise.
         /// </summary>
         /// <param name="course"></param>
-        public void AddCourse(Course course)
+        public bool AddCourse(Course course)
         {
-            if (!allCourses.ContainsKey(course.Code))
+            if (courses.ContainsKey(course))
             {
-                allCourses[course.Code] = course;
+                return false;
             }
+
+            courses[course] = new List<Course>();
+            courseNames[course.Code] = course;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Returns the Course object using the course code as key.
+        /// Throws an exception if the Course isn't found.
+        /// </summary>
+        /// <param name="course"></param>
+        /// <returns></returns>
+        /// <exception cref="KeyNotFoundException"></exception>
+        public Course GetCourse(string course)
+        {
+            if (!courseNames.ContainsKey(course))
+            {
+                throw new KeyNotFoundException("This course does not exist yet.");
+            }
+
+            return courseNames[course];
+        }
+
+        /// <summary>
+        /// Adds a course to the completed set.
+        /// 
+        /// Returns false if the course already exists.
+        /// True otherwise.
+        /// </summary>
+        /// <param name="course"></param>
+        public bool AddCompleted(Course course)
+        {
+            if (completed.Contains(course))
+            {
+                return false;
+            }
+
+            completed.Add(course);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Returns a list of all completed courses.
+        /// </summary>
+        /// <returns></returns>
+        public List<Course> SeeCompleted()
+        {
+            return completed.ToList();
         }
 
 
@@ -118,19 +124,8 @@ namespace SchedulerBuilder
                     throw new ArgumentException("Cannot create a circular dependency.");
                 }
             }
-
-            // Add the prerequisite course as a key.
-            if (!courses.ContainsKey(prerequisite))
-            {
-                courses[prerequisite] = new List<Course>();
-            }
-
-            // Add key and value pair if it doesn't exist.
-            if (!courses.ContainsKey(next))
-            {
-                courses[next] = new List<Course> {prerequisite};
-            }
         }
+
 
         public void RemovePrerequisite(Course prerequisite, Course next)
         {
@@ -223,6 +218,7 @@ namespace SchedulerBuilder
             // Push current node to stack.
             stack.Push(key);
         }
+
 
         public bool hasCycles()
         {
@@ -322,13 +318,32 @@ namespace SchedulerBuilder
         }
 
         /// <summary>
+        /// Returns true if two courses have the same 
+        /// course code.
+        /// i.e. CS 4150
+        /// 
+        /// False otherwise.
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object? obj)
+        {
+            if (obj == null || !(obj is Course))
+            {
+                return false;
+            }
+
+            return ToString().Equals(obj.ToString());
+        }
+
+        /// <summary>
         /// Returns the string representation of the course.
-        /// i.e. CS 4150 - Algorithms
+        /// i.e. CS 4150
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
-            return code + " - " + name;
+            return code;
         }
     }
 }

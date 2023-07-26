@@ -9,33 +9,25 @@ namespace SchedulerTester
         public void Test_Default_Constructor()
         {
             Scheduler scheduler = new Scheduler();
-            scheduler.AddCourse(new Course("CS", 3505, "Software Practice II", "This course teaches C++."));
+            Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
+            scheduler.AddCourse(cs3505);
 
-            Assert.AreEqual("CS 3505 - Software Practice II", scheduler.GetCourse("CS 3505").ToString());
+            Assert.AreEqual(cs3505, scheduler.GetCourse("CS 3505"));
         }
 
         [TestMethod]
         public void Test_Argument_Constructor()
         {
-            List<Course> list = new List<Course>
-            {
-                new Course("CS", 3505, "Software Practice II", "This course teaches C++."),
-                new Course("CS", 2420, "Intro to Data Structures and Algorithms", "This course is an intro to DSA."),
-                new Course("CS", 4150, "Algorithms", "This course teaches DSA in depth.")
-            };
+            Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
+            Course cs2420 = new Course("CS", 2420, "Intro to Data Structures and Algorithms", "This course is an intro to DSA.");
+            Course cs4150 = new Course("CS", 4150, "Algorithms", "This course teaches DSA in depth.");
+
+            List<Course> list = new List<Course> { cs3505, cs2420, cs4150 };
             Scheduler scheduler = new Scheduler(list);
 
-            Assert.AreEqual("CS 3505 - Software Practice II", scheduler.GetCourse("CS 3505").ToString());
-            Assert.AreEqual("CS 2420 - Intro to Data Structures and Algorithms", scheduler.GetCourse("CS 2420").ToString());
-            Assert.AreEqual("CS 4150 - Algorithms", scheduler.GetCourse("CS 4150").ToString());
-        }
-
-        [TestMethod]
-        [ExpectedException(typeof(KeyNotFoundException))]
-        public void Test_Exception_GetCompleted()
-        {
-            Scheduler scheduler = new Scheduler();
-            scheduler.GetCompleted("CS 4150");
+            Assert.AreEqual(cs3505, scheduler.GetCourse("CS 3505"));
+            Assert.AreEqual(cs2420, scheduler.GetCourse("CS 2420"));
+            Assert.AreEqual(cs4150, scheduler.GetCourse("CS 4150"));
         }
 
         [TestMethod]
@@ -47,13 +39,13 @@ namespace SchedulerTester
         }
 
         [TestMethod]
-        public void Test_AddCompleted()
+        public void Test_AddCourse()
         {
 
         }
 
         [TestMethod]
-        public void Test_AddCourse()
+        public void Test_AddCompleted()
         {
 
         }
