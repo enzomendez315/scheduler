@@ -74,6 +74,12 @@
             return courseNames[course];
         }
 
+
+        public List<Course> GetCourses()
+        {
+            return courses.Keys.ToList();
+        }
+
         /// <summary>
         /// Adds a course to the completed set.
         /// 
@@ -97,7 +103,7 @@
         /// Returns a list of all completed courses.
         /// </summary>
         /// <returns></returns>
-        public List<Course> SeeCompleted()
+        public List<Course> GetCompleted()
         {
             return completed.ToList();
         }
