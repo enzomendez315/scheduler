@@ -71,7 +71,23 @@ namespace SchedulerTester
             Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
             scheduler.AddCourse(cs3505);
 
-            Assert.AreEqual(1, scheduler.GetCourses().Count);
+            Assert.AreEqual(1, scheduler.GetAllCourses().Count);
+        }
+
+        [TestMethod]
+        public void Test_AddCourse_Count_Duplicates()
+        {
+            Scheduler scheduler = new Scheduler();
+            Course cs2420 = new Course("CS", 2420, "Intro to Data Structures and Algorithms", "This course is an intro to DSA.");
+            Course cs3500 = new Course("CS", 3500, "Software Practice I", "This course teaches C#.");
+            Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
+            scheduler.AddCourse(cs2420);
+            scheduler.AddCourse(cs3505);
+            scheduler.AddCourse(cs3500);
+            scheduler.AddCourse(cs3505);
+            scheduler.AddCourse(cs3505);
+
+            Assert.AreEqual(3, scheduler.GetAllCourses().Count);
         }
 
         [TestMethod]
@@ -85,6 +101,39 @@ namespace SchedulerTester
         }
 
         [TestMethod]
+        public void Test_AddCourse_Indirectly_AddPrerequisite()
+        {
+            Scheduler scheduler = new Scheduler();
+            Course cs2420 = new Course("CS", 2420, "Intro to Data Structures and Algorithms", "This course is an intro to DSA.");
+            Course cs3500 = new Course("CS", 3500, "Software Practice I", "This course teaches C#.");
+            Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
+            scheduler.AddPrerequisite(cs2420, cs3500);
+            scheduler.AddPrerequisite(cs3500, cs3505);
+
+            Assert.AreEqual(3, scheduler.GetAllCourses().Count);
+            Assert.AreEqual(cs2420, scheduler.GetCourse("CS 2420"));
+            Assert.AreEqual(cs3500, scheduler.GetCourse("CS 3500"));
+            Assert.AreEqual(cs3505, scheduler.GetCourse("CS 3505"));
+        }
+
+        [TestMethod]
+        public void Test_AddCourse_Indirectly_AddCompleted()
+        {
+            Scheduler scheduler = new Scheduler();
+            Course cs2420 = new Course("CS", 2420, "Intro to Data Structures and Algorithms", "This course is an intro to DSA.");
+            Course cs3500 = new Course("CS", 3500, "Software Practice I", "This course teaches C#.");
+            Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
+            scheduler.AddCompleted(cs2420);
+            scheduler.AddCompleted(cs3500);
+            scheduler.AddCompleted(cs3505);
+
+            Assert.AreEqual(3, scheduler.GetAllCourses().Count);
+            Assert.AreEqual(cs2420, scheduler.GetCourse("CS 2420"));
+            Assert.AreEqual(cs3500, scheduler.GetCourse("CS 3500"));
+            Assert.AreEqual(cs3505, scheduler.GetCourse("CS 3505"));
+        }
+
+        [TestMethod]
         [ExpectedException(typeof(KeyNotFoundException))]
         public void Test_Exception_GetCourse()
         {
@@ -93,7 +142,66 @@ namespace SchedulerTester
         }
 
         [TestMethod]
-        public void Test_AddCompleted()
+        public void Test_GetAllCourses_Empty()
+        {
+            Scheduler scheduler = new Scheduler();
+
+            Assert.AreEqual(0, scheduler.GetAllCourses().Count);
+        }
+
+        [TestMethod]
+        public void Test_GetAllCourses_Multiple()
+        {
+            Scheduler scheduler = new Scheduler();
+            Course cs2420 = new Course("CS", 2420, "Intro to Data Structures and Algorithms", "This course is an intro to DSA.");
+            Course cs3810 = new Course("CS", 3810, "Computer Organization", "This course teaches how computers' hardware works.");
+            Course cs4400 = new Course("CS", 4400, "Computer Systems", "This course teaches how computers work in depth.");
+            scheduler.AddCourse(cs2420);
+            scheduler.AddCourse(cs3810);
+            scheduler.AddCourse(cs4400);
+
+            Assert.AreEqual(3, scheduler.GetAllCourses().Count);
+            Assert.IsTrue(scheduler.GetAllCourses().Contains(cs2420));
+            Assert.IsTrue(scheduler.GetAllCourses().Contains(cs3810));
+            Assert.IsTrue(scheduler.GetAllCourses().Contains(cs4400));
+        }
+
+        [TestMethod]
+        public void Test_AddCompleted_New()
+        {
+            Scheduler scheduler = new Scheduler();
+            Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
+
+            Assert.IsTrue(scheduler.AddCompleted(cs3505));
+        }
+
+        [TestMethod]
+        public void Test_AddCompleted_Existing_Single()
+        {
+            Scheduler scheduler = new Scheduler();
+            Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
+            scheduler.AddCompleted(cs3505);
+
+            Assert.IsFalse(scheduler.AddCompleted(cs3505));
+        }
+
+        [TestMethod]
+        public void Test_AddCompleted_Existing_Multiple()
+        {
+            Scheduler scheduler = new Scheduler();
+            Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
+            Course cs3810 = new Course("CS", 3810, "Computer Organization", "This course teaches how computers' hardware works.");
+            Course cs4150 = new Course("CS", 4150, "Algorithms", "This course teaches DSA in depth.");
+
+            Assert.IsTrue(scheduler.AddCompleted(cs3505));
+            Assert.IsTrue(scheduler.AddCompleted(cs4150));
+            Assert.IsFalse(scheduler.AddCompleted(cs3505));
+            Assert.IsTrue(scheduler.AddCompleted(cs3810));
+            Assert.IsFalse(scheduler.AddCompleted(cs3810));
+        }
+
+        [TestMethod]
+        public void Test_AddCompleted_Count()
         {
 
         }

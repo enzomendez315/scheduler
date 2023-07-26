@@ -74,8 +74,11 @@
             return courseNames[course];
         }
 
-
-        public List<Course> GetCourses()
+        /// <summary>
+        /// Returns a list of all the courses.
+        /// </summary>
+        /// <returns></returns>
+        public List<Course> GetAllCourses()
         {
             return courses.Keys.ToList();
         }
@@ -95,6 +98,10 @@
             }
 
             completed.Add(course);
+            if (!courses.ContainsKey (course))
+            {
+                AddCourse (course);
+            }
 
             return true;
         }
