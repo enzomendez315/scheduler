@@ -368,7 +368,14 @@ namespace SchedulerTester
         [TestMethod]
         public void Test_RemovePrerequisite_No_Prerequisite()
         {
-            throw new NotImplementedException();
+            Scheduler scheduler = new Scheduler();
+            Course cs2100 = new Course("CS", 2100, "Discrete Structures", "This course teaches discrete math.");
+            Course cs2420 = new Course("CS", 2420, "Intro to Data Structures and Algorithms", "This course is an intro to DSA.");
+            Course cs3500 = new Course("CS", 3500, "Software Practice I", "This course teaches C#.");
+            scheduler.AddPrerequisite(cs2420, cs3500);
+
+            Assert.IsFalse(scheduler.RemovePrerequisite(cs2100, cs3500));
+            Assert.AreEqual(1, scheduler.GetPrerequisites(cs3500).Count);
         }
 
         [TestMethod]
@@ -382,22 +389,45 @@ namespace SchedulerTester
         }
 
         [TestMethod]
-        [ExpectedException(typeof(KeyNotFoundException))]
-        public void Test_GetPrerequisites_Invalid_Key()
-        {
-            throw new NotImplementedException();
-        }
-
-        [TestMethod]
         public void Test_GetPrerequisites_Empty()
         {
-            throw new NotImplementedException();
+            Scheduler scheduler = new Scheduler();
+            Course cs3500 = new Course("CS", 3500, "Software Practice I", "This course teaches C#.");
+            scheduler.AddCourse(cs3500);
+
+            Assert.AreEqual(0, scheduler.GetPrerequisites(cs3500).Count);
         }
 
         [TestMethod]
         public void Test_GetPrerequisites_Multiple()
         {
-            throw new NotImplementedException();
+            Scheduler scheduler = new Scheduler();
+            Course cs2100 = new Course("CS", 2100, "Discrete Structures", "This course teaches discrete math.");
+            Course cs2420 = new Course("CS", 2420, "Intro to Data Structures and Algorithms", "This course is an intro to DSA.");
+            Course cs3500 = new Course("CS", 3500, "Software Practice I", "This course teaches C#.");
+            Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
+            Course cs3810 = new Course("CS", 3810, "Computer Organization", "This course teaches how computers' hardware works.");
+            Course cs4150 = new Course("CS", 4150, "Algorithms", "This course teaches DSA in depth.");
+            Course cs4400 = new Course("CS", 4400, "Computer Systems", "This course teaches how computers work in depth.");
+            scheduler.AddPrerequisite(cs2420, cs3500);
+            scheduler.AddPrerequisite(cs3500, cs3505);
+            scheduler.AddPrerequisite(cs2420, cs3810);
+            scheduler.AddPrerequisite(cs2100, cs4150);
+            scheduler.AddPrerequisite(cs3500, cs4150);
+            scheduler.AddPrerequisite(cs3810, cs4400);
+
+            Assert.AreEqual(2, scheduler.GetPrerequisites(cs4150).Count);
+            Assert.AreEqual(1, scheduler.GetPrerequisites(cs3505).Count);
+            Assert.AreEqual(0, scheduler.GetPrerequisites(cs2420).Count);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(KeyNotFoundException))]
+        public void Test_GetPrerequisites_Invalid_Key()
+        {
+            Scheduler scheduler = new Scheduler();
+            Course cs2100 = new Course("CS", 2100, "Discrete Structures", "This course teaches discrete math.");
+            scheduler.GetPrerequisites(cs2100);
         }
 
         [TestMethod]
