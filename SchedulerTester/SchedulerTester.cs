@@ -203,60 +203,84 @@ namespace SchedulerTester
         [TestMethod]
         public void Test_AddCompleted_Count()
         {
+            Scheduler scheduler = new Scheduler();
+            Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
+            scheduler.AddCompleted(cs3505);
 
+            Assert.AreEqual(1, scheduler.GetAllCourses().Count);
         }
 
         [TestMethod]
-        public void Test_AddPrerequisite()
+        public void Test_GetCompleted_Empty()
         {
             Scheduler scheduler = new Scheduler();
+
+            Assert.AreEqual(0, scheduler.GetCompleted().Count);
+        }
+
+        [TestMethod]
+        public void Test_GetCompleted_Multiple()
+        {
+            Scheduler scheduler = new Scheduler();
+            Course cs2420 = new Course("CS", 2420, "Intro to Data Structures and Algorithms", "This course is an intro to DSA.");
+            Course cs3810 = new Course("CS", 3810, "Computer Organization", "This course teaches how computers' hardware works.");
+            Course cs4400 = new Course("CS", 4400, "Computer Systems", "This course teaches how computers work in depth.");
+            scheduler.AddCompleted(cs2420);
+            scheduler.AddCompleted(cs3810);
+            scheduler.AddCompleted(cs4400);
+
+            Assert.AreEqual(3, scheduler.GetCompleted().Count);
+            Assert.IsTrue(scheduler.GetCompleted().Contains(cs2420));
+            Assert.IsTrue(scheduler.GetCompleted().Contains(cs3810));
+            Assert.IsTrue(scheduler.GetCompleted().Contains(cs4400));
+        }
+
+        [TestMethod]
+        public void Test_AddPrerequisite_New()
+        {
+            Scheduler scheduler = new Scheduler();
+            Course cs3500 = new Course("CS", 3500, "Software Practice I", "This course teaches C#.");
             Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
-            scheduler.AddPrerequisite(
-                new Course("CS", 3500, "Software Practice I", "This course teaches C#."),
-                cs3505);
 
-            string test = scheduler.SeePrerequisites(cs3505);
+            Assert.IsTrue(scheduler.AddPrerequisite(cs3500, cs3505));
+        }
 
+        [TestMethod]
+        public void Test_AddPrerequisite_List()
+        {
+            Scheduler scheduler = new Scheduler();
+            Course cs3500 = new Course("CS", 3500, "Software Practice I", "This course teaches C#.");
+            Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
+            scheduler.AddPrerequisite(cs3500, cs3505);
 
-            // Assert stuff.
+            Assert.AreEqual(1, scheduler.GetPrerequisites(cs3505).Count);
+            Assert.IsTrue(scheduler.GetPrerequisites(cs3505).Contains(cs3500));
         }
 
         [TestMethod]
         public void Test_AddPrerequisite_Duplicate_Keys()
         {
+            Scheduler scheduler = new Scheduler();
+            Course cs2420 = new Course("CS", 2420, "Intro to Data Structures and Algorithms", "This course is an intro to DSA.");
+            Course cs3500 = new Course("CS", 3500, "Software Practice I", "This course teaches C#.");
+            Course cs3810 = new Course("CS", 3810, "Computer Organization", "This course teaches how computers' hardware works.");
+            scheduler.AddPrerequisite(cs2420, cs3500);
+            scheduler.AddPrerequisite(cs2420, cs3810);
 
+            Assert.AreEqual(3, scheduler.GetAllCourses().Count);
         }
 
         [TestMethod]
         public void Test_AddPrerequisite_Duplicate_Values()
         {
-
-        }
-
-        [TestMethod]
-        public void Test_AddPrerequisite_Same_Key_Value()
-        {
-
-        }
-
-        [TestMethod]
-        public void Test_SortCourses()
-        {
             Scheduler scheduler = new Scheduler();
-            Course cs2100 = new Course("CS", 2100, "Discrete Structures", "This course teaches discrete math.");
             Course cs2420 = new Course("CS", 2420, "Intro to Data Structures and Algorithms", "This course is an intro to DSA.");
             Course cs3500 = new Course("CS", 3500, "Software Practice I", "This course teaches C#.");
-            Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
-            Course cs3810 = new Course("CS", 3810, "Computer Organization", "This course teaches how computers' hardware works.");
-            Course cs4150 = new Course("CS", 4150, "Algorithms", "This course teaches DSA in depth.");
-            Course cs4400 = new Course("CS", 4400, "Computer Systems", "This course teaches how computers work in depth.");
             scheduler.AddPrerequisite(cs2420, cs3500);
-            scheduler.AddPrerequisite(cs3500, cs3505);
-            scheduler.AddPrerequisite(cs2420, cs3810);
-            scheduler.AddPrerequisite(cs2100, cs4150);
-            scheduler.AddPrerequisite(cs3500, cs4150);
-            scheduler.AddPrerequisite(cs3810, cs4400);
-            scheduler.SortCourses();            
+
+            Assert.IsFalse(scheduler.AddPrerequisite(cs2420, cs3500));
+            Assert.AreEqual(2, scheduler.GetAllCourses().Count);
+            Assert.AreEqual(1, scheduler.GetPrerequisites(cs3500).Count);
         }
 
         [TestMethod]
@@ -296,6 +320,106 @@ namespace SchedulerTester
             scheduler.AddPrerequisite(cs3500, cs4150);
             scheduler.AddPrerequisite(cs3810, cs4400);
             scheduler.AddPrerequisite(cs4400, cs2420);
+        }
+
+        [TestMethod]
+        public void Test_RemovePrerequisite_Single()
+        {
+            Scheduler scheduler = new Scheduler();
+            Course cs3500 = new Course("CS", 3500, "Software Practice I", "This course teaches C#.");
+            Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
+            scheduler.AddPrerequisite(cs3500, cs3505);
+
+            Assert.IsTrue(scheduler.RemovePrerequisite(cs3500, cs3505));
+            Assert.AreEqual(0, scheduler.GetPrerequisites(cs3505).Count);
+            Assert.AreEqual(2, scheduler.GetAllCourses().Count);
+        }
+
+        [TestMethod]
+        public void Test_RemovePrerequisite_Multiple()
+        {
+            Scheduler scheduler = new Scheduler();
+            Course cs2100 = new Course("CS", 2100, "Discrete Structures", "This course teaches discrete math.");
+            Course cs2420 = new Course("CS", 2420, "Intro to Data Structures and Algorithms", "This course is an intro to DSA.");
+            Course cs3500 = new Course("CS", 3500, "Software Practice I", "This course teaches C#.");
+            Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
+            Course cs3810 = new Course("CS", 3810, "Computer Organization", "This course teaches how computers' hardware works.");
+            Course cs4150 = new Course("CS", 4150, "Algorithms", "This course teaches DSA in depth.");
+            Course cs4400 = new Course("CS", 4400, "Computer Systems", "This course teaches how computers work in depth.");
+            scheduler.AddPrerequisite(cs2420, cs3500);
+            scheduler.AddPrerequisite(cs3500, cs3505);
+            scheduler.AddPrerequisite(cs2420, cs3810);
+            scheduler.AddPrerequisite(cs2100, cs4150);
+            scheduler.AddPrerequisite(cs3500, cs4150);
+            scheduler.AddPrerequisite(cs3810, cs4400);
+
+            Assert.AreEqual(7, scheduler.GetAllCourses().Count);
+            Assert.AreEqual(2, scheduler.GetPrerequisites(cs4150).Count);
+
+            scheduler.RemovePrerequisite(cs3500, cs4150);
+            Assert.AreEqual(1, scheduler.GetPrerequisites(cs4150).Count);
+            Assert.IsFalse(scheduler.GetPrerequisites(cs4150).Contains(cs3500));
+
+            scheduler.RemovePrerequisite(cs2100, cs4150);
+            Assert.AreEqual(0, scheduler.GetPrerequisites(cs4150).Count);
+            Assert.AreEqual(7, scheduler.GetAllCourses().Count);
+        }
+
+        [TestMethod]
+        public void Test_RemovePrerequisite_No_Prerequisite()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(KeyNotFoundException))]
+        public void Test_RemovePrerequisite_Invalid_Key()
+        {
+            Scheduler scheduler = new Scheduler();
+            Course cs3500 = new Course("CS", 3500, "Software Practice I", "This course teaches C#.");
+            Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
+            scheduler.RemovePrerequisite(cs3500, cs3505);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(KeyNotFoundException))]
+        public void Test_GetPrerequisites_Invalid_Key()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public void Test_GetPrerequisites_Empty()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public void Test_GetPrerequisites_Multiple()
+        {
+            throw new NotImplementedException();
+        }
+
+        [TestMethod]
+        public void Test_SortCourses()
+        {
+            Scheduler scheduler = new Scheduler();
+            Course cs2100 = new Course("CS", 2100, "Discrete Structures", "This course teaches discrete math.");
+            Course cs2420 = new Course("CS", 2420, "Intro to Data Structures and Algorithms", "This course is an intro to DSA.");
+            Course cs3500 = new Course("CS", 3500, "Software Practice I", "This course teaches C#.");
+            Course cs3505 = new Course("CS", 3505, "Software Practice II", "This course teaches C++.");
+            Course cs3810 = new Course("CS", 3810, "Computer Organization", "This course teaches how computers' hardware works.");
+            Course cs4150 = new Course("CS", 4150, "Algorithms", "This course teaches DSA in depth.");
+            Course cs4400 = new Course("CS", 4400, "Computer Systems", "This course teaches how computers work in depth.");
+            scheduler.AddPrerequisite(cs2420, cs3500);
+            scheduler.AddPrerequisite(cs3500, cs3505);
+            scheduler.AddPrerequisite(cs2420, cs3810);
+            scheduler.AddPrerequisite(cs2100, cs4150);
+            scheduler.AddPrerequisite(cs3500, cs4150);
+            scheduler.AddPrerequisite(cs3810, cs4400);
+            scheduler.SortCourses();
+
+            throw new NotImplementedException();
         }
 
         [TestMethod]

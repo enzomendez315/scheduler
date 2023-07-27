@@ -183,6 +183,17 @@
         }
 
 
+        public List<Course> GetPrerequisites(Course course)
+        {
+            if (!courses.ContainsKey(course))
+            {
+                throw new KeyNotFoundException();
+            }
+            
+            return courses[course];
+        }
+
+
         public string SeePrerequisites(Course course)
         {
             if (!courses.ContainsKey(course))
